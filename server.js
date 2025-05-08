@@ -27,14 +27,14 @@ app.post("/screenshot", async (req, res) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    await page.setUserAgent("LewellUserAgent/1.0");
+    await page.setUserAgent("");
     await page.setViewport({
       width: parsedWidth,
       height: height,
     });
 
     // Загружаем страницу и ждем полной загрузки
-    await page.goto(url, { waitUntil: 'load', timeout: 1200000 });
+    await page.goto(url, { waitUntil: "load", timeout: 1200000 });
 
     const urlObj = new URL(url);
     const domain = urlObj.hostname;
