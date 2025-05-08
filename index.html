@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css" />
+    <title>Скриншоты страниц</title>
+  </head>
+  <body>
+    <h1>Скриншоты страниц</h1>
+    <form id="screenshotForm" class="form">
+      <div class="form__input">
+        <label for="url">Введите полный URL страниц через ,</label>
+        <input type="text" id="url" required placeholder="Введите URL" />
+      </div>
+
+      <div class="form__checkboxes">
+        <h2 class="form__title">Основные разрешения экранов</h2>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_7680" value="7680" />
+          <label for="size_7680">Ширина страницы 7680(8к)</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_3840" value="3840" />
+          <label for="size_3840">Ширина страницы 3840(4к)</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_2560" value="2560" />
+          <label for="size_2560">Ширина страницы 2560(2к)</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_1920" value="1920" />
+          <label for="size_1920">Ширина страницы 1920(Full hd)</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_1280" value="1280" />
+          <label for="size_1280">Ширина страницы 1280(hd)</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_992" value="992" />
+          <label for="size_992">Ширина страницы 992</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_768" value="768" />
+          <label for="size_768">Ширина страницы 768</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_550" value="550" />
+          <label for="size_550">Ширина страницы 550</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_375" value="375" />
+          <label for="size_375"
+            >Ширина страницы 375 (iPhone SE 2022, iPhone 13 mini, iPhone 12
+            mini, iPhone SE 2020, iPhone 11 Pro, iPhone XS, iPhone X, iPhone 8,
+            iPhone 7, iPhone 6S, iPhone 6+, iPhone 6)</label
+          >
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_320" value="320" />
+          <label for="size_320"
+            >Ширина страницы 320 (iPhone SE, iPhone 5S, iPhone 5C, iPhone 5,
+            iPhone 4S, iPhone 4)</label
+          >
+        </div>
+        <h2 class="form__title">Дополнительные разрешения экранов</h2>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_440" value="440" />
+          <label for="size_440">Iphone 16 pro max</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_402" value="402" />
+          <label for="size_402">Iphone 16 pro</label>
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_430" value="430" />
+          <label for="size_430"
+            >iPhone 16 Plus, iPhone 15 Pro Max, iPhone 15 Plus, iPhone 14 Pro
+            Max</label
+          >
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_393" value="393" />
+          <label for="size_393"
+            >iPhone 16, iPhone 15 Pro, iPhone 15, iPhone 14 Pro</label
+          >
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_428" value="428" />
+          <label for="size_428"
+            >iPhone 14 Plus, iPhone 13 Pro Max, iPhone 12 Pro Max</label
+          >
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_390" value="390" />
+          <label for="size_390"
+            >iPhone 14, iPhone 13 Pro, iPhone 13, iPhone 12 Pro, iPhone
+            12</label
+          >
+        </div>
+        <div class="form__checkbox">
+          <input type="checkbox" name="page_size" id="size_414" value="414" />
+          <label for="size_414"
+            >iPhone 11 Pro Max, iPhone 11, iPhone XR, iPhone XS Max, iPhone 8+,
+            iPhone 7+, iPhone 6S+,
+          </label>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <button class="btn" type="submit">Сделать скриншот</button>
+        <div class="load"></div>
+      </div>
+    </form>
+
+    <div id="progress-bar"></div>
+
+    <div id="result"></div>
+
+    <script>
+      document
+        .getElementById("screenshotForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const urlInput = document.getElementById("url").value;
+          const urls = urlInput.split(",").map((url) => url.trim());
+          const checkboxes = document.querySelectorAll(
+            'input[name="page_size"]:checked'
+          );
+          const widths = Array.from(checkboxes).map(
+            (checkbox) => checkbox.value
+          );
+
+          const results = [];
+          const totalRequests = urls.length * widths.length;
+          let completedRequests = 0;
+          const progressBar = document.getElementsByClassName("progress-bar");
+          const loader = document.querySelector(".load");
+          loader.classList.add("active");
+
+          for (const url of urls) {
+            for (const width of widths) {
+              try {
+                const response = await fetch("/screenshot", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ url, width }),
+                });
+                loader.classList.add("active");
+
+                const result = await response.json();
+                if (result.success) {
+                  results.push(
+                    `<a href="${result.image}" target="_black"><img src="${result.image}" alt="Скриншот с ${url} c шириной ${width}" /></a>`
+                  );
+                } else {
+                  results.push(
+                    `<p>Ошибка при создании скриншота с ${url} на ширину ${width}</p>`
+                  );
+                }
+              } catch (error) {
+                console.error(error);
+                loader.classList.remove("active");
+              } finally {
+                completedRequests++;
+                progressBar.innerHTML = `Скринов создано ${completedRequests}/${totalRequests}`;
+                
+                if (completedRequests == totalRequests) {
+                  loader.classList.remove("active");
+                  document.getElementById("screenshotForm").reset();
+                }
+              }
+            }
+          }
+
+          document.getElementById("result").innerHTML = results.join("");
+        });
+    </script>
+  </body>
+</html>
